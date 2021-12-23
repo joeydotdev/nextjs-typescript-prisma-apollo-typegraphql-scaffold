@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator typegraphql {
+  provider           = "typegraphql-prisma"
+  output             = "../graphql/generated/type-graphql"
+  emitTranspiledCode = true
+}
+
+model Genre {
+  id   String @id @default(uuid())
+  name String
+
+  Artist   Artist? @relation(fields: [artistId], references: [id])
+  artistId String?
+}
+
+model Artist {
+  id        String  @id @default(uuid())
+  name      String
+  /// @TypeGraphQL.omit(output: true, input: true)
+  genres    Genre[]
+  artistUrl String? @map(name: "artist_url")
+  /// @TypeGraphQL.omit(output: true)
+  spotifyId String? @map(name: "spotify_id")
+  Song      Song?   @relation(fields: [songId], references: [id])
+  songId    String?
+}
+
+model Song {
+  id         String   @id @default(uuid())
+  name       String
+  // Media URL
+  previewUrl String   @map(name: "preview_url")
+  artworkUrl String?
+  artists    Artist[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+}

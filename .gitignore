@@ -1,0 +1,6 @@
+graphql/generated/
+node_modules
+.next/
+.vscode/
+.env
+*.log
